@@ -85,7 +85,7 @@ jobs:
     needs: [Build]
     runs-on: ubuntu-latest
     environment: 
-      name: Staging
+      name: Development
       url: 'https://${{env.APP_NAME}}-staging.herokuapp.com/'
     steps:
       - name: Deploy
@@ -100,50 +100,22 @@ jobs:
           HD_FLASK_ENV: ${{secrets.FLASK_ENV}}
           HD_SECRET_KEY: ${{secrets.SECRET_KEY}}
 
-  DeployProd:
-    name: Deploy to Production 
+  DeployProduction:
+    name: Deploy to Production
     needs: [DeployStaging]
     runs-on: ubuntu-latest
     environment: 
       name: Production
-      url: 'https://${{env.APP_NAME}}-dev.herokuapp.com/'
+      url: 'https://${{env.APP_NAME}}-production.herokuapp.com/'
     steps:
       - name: Deploy
-        run: echo I am deploying ${{ env.APP_NAME }} at https://${{env.APP_NAME}}-dev.herokuapp.com/
+        run: echo I am deploying ${{ env.APP_NAME }} at https://${{env.APP_NAME}}-production.herokuapp.com/
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "${{ env.APP_NAME }}-prod" #Must be unique in Heroku
+          heroku_app_name: "${{ env.APP_NAME }}-production" #Must be unique in Heroku
           heroku_email: "${{ secrets.HEROKU_EMAIL }}"
         env:
           HD_FLASK_ENV: ${{secrets.FLASK_ENV}}
           HD_SECRET_KEY: ${{secrets.SECRET_KEY}}
-
-  Release:
-    name: Create a Release 
-    needs: [DeployProd]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          output-file: "false"
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            ${{ steps.Changelog.outputs.clean_changelog }}
-          draft: false
-          prerelease: false
