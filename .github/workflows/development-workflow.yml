@@ -27,6 +27,8 @@
 name: Flask API Development Build
 
 on:
+  push:
+    branches: [ development ]
   pull_request:
     branches: [ development ]
   workflow_dispatch:
