@@ -24,9 +24,11 @@
 #   * peter-evans/commit-comment@v1: adds message to commit
 # **************************************************************************************************************** #
 
-name: Flask API Staging Build
+name: Flask Back-end Staging Build
 
 on:
+  push:
+    branches: [ staging ]
   pull_request:
     branches: [ staging ]
   workflow_dispatch:
