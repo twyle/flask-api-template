@@ -6,13 +6,13 @@ all: run
 
 sort: venv dependencies
 	@echo "\n${BLUE} Running isort..."
-	@venv/bin/isort .
+	@isort .
 
 lint: sort
 	@echo "\n${BLUE} Running the flake8 linter..."
-	@venv/bin/flake8
+	@flake8
 	@echo "\n${BLUE} Running the pylint linter..."
-	@venv/bin/pylint --rcfile=setup.cfg api/
+	@pylint --rcfile=setup.cfg api/
 
 test: lint
 	@echo "\n${BLUE} Running the tests..."
@@ -28,12 +28,12 @@ venv:
 	@python3 -m venv venv
 
 dependencies: requirements.txt requirements-dev.txt
-	@venv/bin/pip install -r requirements-dev.txt
-	@venv/bin/pip install -r requirements.txt
+	@pip install -r requirements-dev.txt
+	@pip install -r requirements.txt
 
 run: test
 	@echo SECRET_KEY=secret_key"\n"FLASK_ENV=development"\n"APP=app.py"\n" > .env 
-	@venv/bin/flask run 
+	@flask run
 
 clean:
-	@rm -rf .pytest_cache .coverage coverage.xml __pycache__ ${PACKAGE}/__pycache__ ${TEST}/__pycache__ venv
+	@rm -rf .pytest_cache .coverage coverage.xml __pycache__ ${PACKAGE}/__pycache__ ${TEST}/__pycache__ 
