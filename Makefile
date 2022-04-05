@@ -18,7 +18,10 @@ test: lint
 	@echo "\n${BLUE} Running the tests..."
 	@SECRET_KEY=secret_key FLASK_ENV=development venv/bin/python3 -m  pytest
 
-install: requirements.txt 
+update-pip:
+	@pip install --upgrade pip
+
+install: upgrade-pip requirements.txt 
 	@pip install -r requirements.txt
 
 install-dev: requirements-dev.txt
@@ -27,6 +30,12 @@ install-dev: requirements-dev.txt
 run: 
 	@echo SECRET_KEY=secret_key"\n"FLASK_ENV=development"\n"APP=app.py"\n" > .env 
 	@flask run
+
+release:
+	@echo "\n${BLUE} Bumping the current version..."
+	@cz bump
+	@echo "\n${BLUE} Updating the change log..."
+	@cz changelog
 
 clean:
 	@rm -rf .pytest_cache .coverage coverage.xml __pycache__ ${PACKAGE}/__pycache__ ${TEST}/__pycache__ 
