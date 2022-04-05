@@ -1,38 +1,14 @@
-on:
+on: 
   push:
-    # Sequence of patterns matched against refs/tags
-    branches: [ release ]
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-    workflow_dispatch:
-
-name: Create Release
+    branches:
+      - release
 
 jobs:
-  build:
-    name: Create Release
+  release-on-push:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3
+      - uses: rymndhng/release-on-push-action@master
         with:
-          github-token: ${{ secrets.CHANGELOG_RELEASE }}
-          output-file: "false"
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            ${{ steps.Changelog.outputs.clean_changelog }}
-          draft: false
-          prerelease: false
+          bump_version_scheme: minor
